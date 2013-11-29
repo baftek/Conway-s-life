@@ -37,22 +37,24 @@ int check_ndb(int row, int column)
 	// 678
 	int nbd_counter=0;
 
-	if(row != 0 && column != 0) 
+	if(row > 0 && column > 0) 
 		if(cell_map[CURRENT_ARRAY][row-1][column-1]==1 ) nbd_counter++;
-	if(row != 0) 
+	if(row > 0) 
 		if(cell_map[CURRENT_ARRAY][row-1][column  ]==1 ) nbd_counter++;
-	if(row != 0 && column != total_columns)								
+	if(row > 0 && column > total_columns)								
 		if(cell_map[CURRENT_ARRAY][row-1][column+1]==1 ) nbd_counter++;
-	if(column != 0)														
+	if(column > 0)														
 		if(cell_map[CURRENT_ARRAY][row  ][column-1]==1 ) nbd_counter++;
-	if(column != total_columns) 
+	if(column < total_columns) 
 		if(cell_map[CURRENT_ARRAY][row  ][column+1]==1 ) nbd_counter++;
-	if(row != total_rows && column != 0) 
+	if(row < total_rows && column > 0) 
 		if(cell_map[CURRENT_ARRAY][row+1][column-1]==1 ) nbd_counter++;
-	if(row != total_rows) 
+	if(row < total_rows) 
 		if(cell_map[CURRENT_ARRAY][row+1][column  ]==1 ) nbd_counter++;
-	if(row != total_rows && column != total_columns) 
+	if(row < total_rows && column < total_columns) 
 		if(cell_map[CURRENT_ARRAY][row+1][column+1]==1 ) nbd_counter++;
+	if(row > total_rows || column > total_columns)
+		printf("row lub column poza zakresem!!!", _getch());
 
 	return nbd_counter;
 }
