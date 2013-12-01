@@ -47,19 +47,19 @@ int check_ndb(int row, int column)
 
 	if(row > 0 && column > 0) 
 		if(cell_map[CURRENT_ARRAY][row-1][column-1]==1 ) nbd_counter++;
-	if(row > 0) 
+	if(row > 0)
 		if(cell_map[CURRENT_ARRAY][row-1][column  ]==1 ) nbd_counter++;
-	if(row > 0 && column > total_columns)								
+	if(row > 0 && column < total_columns-1)
 		if(cell_map[CURRENT_ARRAY][row-1][column+1]==1 ) nbd_counter++;
-	if(column > 0)														
+	if(column > 0)
 		if(cell_map[CURRENT_ARRAY][row  ][column-1]==1 ) nbd_counter++;
-	if(column < total_columns) 
+	if(column < total_columns-1)
 		if(cell_map[CURRENT_ARRAY][row  ][column+1]==1 ) nbd_counter++;
-	if(row < total_rows && column > 0) 
+	if(row < total_rows-1 && column > 0)
 		if(cell_map[CURRENT_ARRAY][row+1][column-1]==1 ) nbd_counter++;
-	if(row < total_rows) 
+	if(row < total_rows-1)
 		if(cell_map[CURRENT_ARRAY][row+1][column  ]==1 ) nbd_counter++;
-	if(row < total_rows && column < total_columns) 
+	if(row < total_rows-1 && column < total_columns-1)
 		if(cell_map[CURRENT_ARRAY][row+1][column+1]==1 ) nbd_counter++;
 	if(row > total_rows || column > total_columns)
 		printf("row lub column poza zakresem!!!", _getch());
@@ -123,7 +123,7 @@ int recalculate_environment()
 }
 
 ////////////////////
-#define FILENAME "C:\\Users\\Bartek\\Documents\\Visual Studio 2010\\Projects\\Conway's life\\Debug\\input.txt"
+#define FILENAME ".\\input.txt"
 ////////////////////
 /*char**/ int read_starting_positions_from_file() //deklarowana
 {
@@ -152,7 +152,7 @@ int recalculate_environment()
 	fclose(f);
 
 	//creating dynamic multidimensional array
-	cell_map = (char***) malloc(2 * sizeof(char*)); //CURRENT ARRAY array
+	cell_map = (char***) calloc(2, sizeof(char*)); //CURRENT ARRAY array
 	if(cell_map == NULL)
 	{
 		printf("Cannot alocate array for data");
@@ -161,7 +161,7 @@ int recalculate_environment()
 	
 	for(int i=0; i<2; i++)
 	{
-		cell_map[i] = (char**) malloc(total_rows * sizeof(char*));
+		cell_map[i] = (char**) calloc(total_rows, sizeof(char*));
 		if(cell_map == NULL)
 		{
 			printf("Cannot alocate array for data - possibly out of memory or something");
@@ -169,7 +169,7 @@ int recalculate_environment()
 		}
 		for(int j=0; j<total_rows; j++)
 		{
-			cell_map[i][j] = (char*) malloc(total_columns * sizeof(char*));
+			cell_map[i][j] = (char*) calloc(total_columns, sizeof(char*));
 			if(cell_map == NULL)
 			{
 				printf("Cannot alocate array for data - possibly out of memory or something - 3. step");
@@ -183,9 +183,8 @@ int recalculate_environment()
 	for(int current_row=0; current_row < total_rows; current_row++) // in every row
 	{	
 		for(int current_column=0; current_column < total_columns; current_column++) // for every column
-		{
 			cell_map[!CURRENT_ARRAY][current_row][current_column] = fgetc(f)-48;
-		}
+
 		fgetc(f); //omit of '\n'
 	}
 	//draw_in_console(0);
