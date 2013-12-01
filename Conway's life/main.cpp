@@ -1,4 +1,12 @@
-﻿#include <stdio.h>
+﻿/* 
+    Fundamentals of Computer Programming 
+    Silesian University of Technology <http://polsl.pl/> 
+    Program: (2) Conway's life
+    Author: Bartłomiej Wolny <bartwol206@student.polsl.pl>
+    Tutor: Piotr Fabian
+    Copyright (c) 2013, Bartlomiej Wolny. All rights reserved. 
+*/
+#include <stdio.h>
 #include <stdlib.h>
 #include <conio.h>
 
