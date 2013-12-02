@@ -1,38 +1,29 @@
 ﻿/* 
-    Fundamentals of Computer Programming 
-    Silesian University of Technology <http://polsl.pl/> 
-    Program: (2) Conway's life
-    Author: Bartłomiej Wolny <bartwol206@student.polsl.pl>
-    Tutor: Piotr Fabian
-    Copyright (c) 2013, Bartlomiej Wolny. All rights reserved. 
+	 Fundamentals of Computer Programming 
+	 Silesian University of Technology <http://polsl.pl/> 
+	 Program: (2) Conway's life
+	 Author: Bartłomiej Wolny <bartwol206@student.polsl.pl>
+	 Tutor: Piotr Fabian
+	 Copyright (c) 2013, Bartlomiej Wolny. All rights reserved. 
 */
+#define ALLEGRO_STATICLINK
 #include <stdio.h>
 #include <stdlib.h>
 #include <conio.h>
+#include <allegro5\allegro5.h>
+#include <allegro5\allegro_image.h>
+#include <allegro5\allegro_native_dialog.h>
+#include <allegro5\allegro_primitives.h>
+ALLEGRO_DISPLAY *display = NULL;
+ALLEGRO_BITMAP  *image   = NULL;
+//#include <allegro5\allegro.h>
+//#include <allegro5\allegro_image.h>
 
 #define CURRENT_ARRAY (!(generation_number%2))
 
 int total_rows=0;
 int total_columns=0;
 char ***cell_map;
-/*char cell_map[2][5][10] = 
-{
-	{
-		{0,0,0,0,0,0,0,0,0,0},
-		{0,0,0,0,1,0,0,0,0,0},
-		{0,0,0,0,1,1,1,1,1,1},
-		{0,0,0,0,1,0,0,0,0,0},
-		{0,0,0,0,0,0,0,0,0,0}
-	},
-	{
-		{0,0,0,0,0,0,0,0,0,0},
-		{0,0,0,0,0,0,0,0,0,0},
-		{0,0,0,0,0,0,0,0,0,0},
-		{0,0,0,0,0,0,0,0,0,0},
-		{0,0,0,0,0,0,0,0,0,0}
-	}
-};*/
-
 
 int alive_cells_number = 0;
 int generation_number = 1;
@@ -61,8 +52,8 @@ int check_ndb(int row, int column)
 		if(cell_map[CURRENT_ARRAY][row+1][column  ]==1 ) nbd_counter++;
 	if(row < total_rows-1 && column < total_columns-1)
 		if(cell_map[CURRENT_ARRAY][row+1][column+1]==1 ) nbd_counter++;
-	if(row > total_rows || column > total_columns)
-		printf("row lub column poza zakresem!!!", _getch());
+	//if(row > total_rows || column > total_columns)
+		//printf("row lub column poza zakresem!!!", _getch());
 
 	return nbd_counter;
 }
@@ -70,8 +61,9 @@ int check_ndb(int row, int column)
 int draw_in_console(int generation_number)
 {
 	system("cls");
-	printf("Conway's life           GENERATION: %d\n\n   ", generation_number);
-	printf("\n\n   ");
+	printf("Conway's life			  GENERATION: %d\n\n	", generation_number);
+
+	//printf("\n\n	");
 	for(int i=0; i<total_rows; i++)
 	{
 		for(int j=0; j < total_columns; j++)
@@ -79,7 +71,7 @@ int draw_in_console(int generation_number)
 			//printf(cell_map[CURRENT_ARRAY][i][j]==0 ? "." : "%d", check_ndb(i, j));
 			printf(cell_map[CURRENT_ARRAY][i][j] == 0 ? "." : "#");
 		}
-		printf("\n   ");
+		printf("\n	");
 	}
 	return 1;
 }
@@ -125,7 +117,7 @@ int recalculate_environment()
 ////////////////////
 #define FILENAME ".\\input.txt"
 ////////////////////
-/*char**/ int read_starting_positions_from_file() //deklarowana
+int read_starting_positions_from_file()
 {
 	FILE *f;
 	if(!(f = fopen(FILENAME, "r")))
@@ -183,17 +175,49 @@ int recalculate_environment()
 	for(int current_row=0; current_row < total_rows; current_row++) // in every row
 	{	
 		for(int current_column=0; current_column < total_columns; current_column++) // for every column
-			cell_map[!CURRENT_ARRAY][current_row][current_column] = fgetc(f)-48;
+			cell_map[CURRENT_ARRAY][current_row][current_column] = fgetc(f)-48;
 
 		fgetc(f); //omit of '\n'
 	}
-	//draw_in_console(0);
-	//draw_in_console(1);
-	//printf("%d rows, %d columns\n", total_rows, total_columns);
-	//printf("%d %d %d %d", cell_map[CURRENT_ARRAY][0][0], cell_map[CURRENT_ARRAY][0][1], cell_map[CURRENT_ARRAY][1][0], cell_map[CURRENT_ARRAY][8][0]);
 
 	//_getch();
 	return 1;
+}
+
+int allegro_all_init()
+{
+	ALLEGRO_DISPLAY *display = NULL;
+	ALLEGRO_BITMAP  *image   = NULL;
+ 
+	if(!al_init()) 
+	{
+		fprintf(stderr, "failed to initialize allegro!\n");
+		return -1;
+	}
+
+	if(!al_init_image_addon()) 
+	{
+      al_show_native_message_box(display, "Error", "Error", "Failed to initialize al_init_image_addon!", 
+                                 NULL, ALLEGRO_MESSAGEBOX_ERROR);
+      return 0;
+	 }
+ 
+	display = al_create_display(640, 480);
+	if(!display) 
+	{
+		fprintf(stderr, "failed to create display!\n");
+		return -1;
+	}
+
+	/*image = al_load_bitmap(".\\dead.jpg"); //C:\\Users\\Bartek\\Documents\\Visual Studio 2010\\Projects\\Conway's life\\Debug
+	if(!image) {
+      al_show_native_message_box(display, "Error", "Error", "Failed to load image!", 
+                                 NULL, ALLEGRO_MESSAGEBOX_ERROR);
+      al_destroy_display(display);
+      return 0;
+   }*/
+ 
+	al_init_primitives_addon();
 }
 
 int main()
@@ -202,9 +226,14 @@ int main()
 		if(_getch())
 			return 0;
 
-	printf("\n\n   Conway's life by baftek\n\n   This is a program that simulates a living group of cells.\n   Dots are dead cells, hashes are alive cells.\n   Alive cells die from isolation when they have 0-1 neighbours\n   They also die of overcrowd when they have 4 or more neighbours.\n   They becomes alive when they have exactly 3 neighbours.\n   Press ANY KEY to start.");
+
+	
+	printf("\n\n	Conway's life by baftek\n\n	This is a program that simulates a living group of cells.\n	Dots are dead cells, hashes are alive cells.\n	Alive cells die from isolation when they have 0-1 neighbours\n	They also die of overcrowd when they have 4 or more neighbours.\n	They becomes alive when they have exactly 3 neighbours.\n	Press ANY KEY to start. New window will appear.");
 	_getch();
 
+	//allegro_all_init(); //moje!!!
+	//al_clear_to_color(al_map_rgb(0,0,20));
+	
 	do
 	{
 		draw_in_console(generation_number);
@@ -221,10 +250,11 @@ int main()
 		else
 		{
 			alive_cells_number = 0;
-			printf("\n\nPress any key to continue to next generation\nor press q to quit\n\n");
+			printf("\n\nPress any key to continue to next generation\nor press q to quit");
 		}
 
 	} while(_getch()!='q');
 
+	//al_destroy_display(display);
 	return 0;
 }
