@@ -58,10 +58,34 @@ int check_ndb(int row, int column)
 	return nbd_counter;
 }
 
+///////////////////////////////////
+#define GRID_SIZE 15
+#define POSITION_OFFSET 50
 int draw_in_console(int generation_number)
 {
 	system("cls");
 	printf("Conway's life			  GENERATION: %d\n\n	", generation_number);
+
+	al_clear_to_color(al_map_rgb(0,0,20));
+	al_draw_rectangle(POSITION_OFFSET, POSITION_OFFSET, total_columns*GRID_SIZE+POSITION_OFFSET, total_rows*GRID_SIZE+POSITION_OFFSET, al_map_rgb(255, 255, 255), 1);
+	for(int i=1; i<total_columns; i++)
+		al_draw_line(POSITION_OFFSET+i*GRID_SIZE, POSITION_OFFSET, POSITION_OFFSET+i*GRID_SIZE, total_rows*GRID_SIZE+POSITION_OFFSET, al_map_rgb(25, 255, 100), 1);
+	for(int i=1; i<total_rows; i++)
+		al_draw_line(POSITION_OFFSET, POSITION_OFFSET+i*GRID_SIZE, total_columns*GRID_SIZE+POSITION_OFFSET, i*GRID_SIZE+POSITION_OFFSET, al_map_rgb(25, 255, 100), 1);
+	
+
+	for(int i=0; i < total_rows; i++)
+	{
+		for(int j=0; j < total_columns; j++)
+		{
+			if(cell_map[CURRENT_ARRAY][i][j])
+				al_draw_filled_circle(50+(GRID_SIZE/2)+j*GRID_SIZE, 50+(GRID_SIZE/2)+i*GRID_SIZE, 5, al_map_rgb(255, 255, 0));
+			else
+				al_draw_filled_circle(50+(GRID_SIZE/2)+j*GRID_SIZE, 50+(GRID_SIZE/2)+i*GRID_SIZE, 5, al_map_rgb(80, 50, 50));
+		}
+	}
+
+	al_flip_display();
 
 	//printf("\n\n	");
 	for(int i=0; i<total_rows; i++)
@@ -140,7 +164,7 @@ int read_starting_positions_from_file()
 	while(!feof(f))
 		if(fgetc(f) == '\n')
 			total_rows++;
-	//total_rows+=1; //korekta
+	total_rows+=1; //korekta
 	fclose(f);
 
 	//creating dynamic multidimensional array
@@ -184,10 +208,15 @@ int read_starting_positions_from_file()
 	return 1;
 }
 
-int allegro_all_init()
-{
-	ALLEGRO_DISPLAY *display = NULL;
-	ALLEGRO_BITMAP  *image   = NULL;
+int main()
+{	
+	if(!read_starting_positions_from_file())
+		if(_getch())
+			return 0;
+	
+	printf("\n\n	Conway's life by baftek\n\n	This is a program that simulates a living group of cells.\n	Dots are dead cells, hashes are alive cells.\n	Alive cells die from isolation when they have 0-1 neighbours\n	They also die of overcrowd when they have 4 or more neighbours.\n	They becomes alive when they have exactly 3 neighbours.\n	Press ANY KEY to start. New window will appear.");
+	_getch();
+
  
 	if(!al_init()) 
 	{
@@ -200,7 +229,7 @@ int allegro_all_init()
       al_show_native_message_box(display, "Error", "Error", "Failed to initialize al_init_image_addon!", 
                                  NULL, ALLEGRO_MESSAGEBOX_ERROR);
       return 0;
-	 }
+	}
  
 	display = al_create_display(640, 480);
 	if(!display) 
@@ -218,21 +247,7 @@ int allegro_all_init()
    }*/
  
 	al_init_primitives_addon();
-}
-
-int main()
-{	
-	if(!read_starting_positions_from_file())
-		if(_getch())
-			return 0;
-
-
-	
-	printf("\n\n	Conway's life by baftek\n\n	This is a program that simulates a living group of cells.\n	Dots are dead cells, hashes are alive cells.\n	Alive cells die from isolation when they have 0-1 neighbours\n	They also die of overcrowd when they have 4 or more neighbours.\n	They becomes alive when they have exactly 3 neighbours.\n	Press ANY KEY to start. New window will appear.");
-	_getch();
-
-	//allegro_all_init(); //moje!!!
-	//al_clear_to_color(al_map_rgb(0,0,20));
+	al_clear_to_color(al_map_rgb(0,0,20));
 	
 	do
 	{
@@ -250,7 +265,7 @@ int main()
 		else
 		{
 			alive_cells_number = 0;
-			printf("\n\nPress any key to continue to next generation\nor press q to quit");
+			printf("\nPress any key to continue to next generation\nor press q to quit");
 		}
 
 	} while(_getch()!='q');
