@@ -144,65 +144,84 @@ int recalculate_environment()
 int read_starting_positions_from_file()
 {
 	FILE *f;
-	if(!(f = fopen(FILENAME, "r")))
+	char file_found;
+	if(file_found = !(f = fopen(FILENAME, "r")))
 	{
-		printf("Could not open the file %s", FILENAME);
+		printf("\n\n\n   Could not open the file %s\n\n   Random values will be generated.\n", FILENAME);
+		srand(time(NULL)); // init of rand
+		total_columns = rand() % 30 + 10;
+		total_rows = rand() % 25 + 10;
+		printf("\n   Generated numbers\n   columns = %d\n   rows = %d", total_columns, total_rows);
 		_getch();
-		return 0;
+		//return 0;
+	}
+	else //file exists
+	{
+		total_columns = 0, total_rows = 0;
+	
+		// count columns
+		while(fgetc(f) != '\n')
+			total_columns++;
+		//total_columns+=1; // korekta
+		fclose(f);
+		f=fopen(FILENAME, "r");
+
+		//count rows
+		while(!feof(f))
+			if(fgetc(f) == '\n')
+				total_rows++;
+		total_rows+=1; //korekta
+		fclose(f);
 	}
 
-	total_columns = 0, total_rows = 0;
-	
-	// count columns
-	while(fgetc(f) != '\n')
-		total_columns++;
-	//total_columns+=1; // korekta
-	fclose(f);
-	f=fopen(FILENAME, "r");
-
-	//count rows
-	while(!feof(f))
-		if(fgetc(f) == '\n')
-			total_rows++;
-	total_rows+=1; //korekta
-	fclose(f);
-
-	//creating dynamic multidimensional array
-	cell_map = (char***) calloc(2, sizeof(char*)); //CURRENT ARRAY array
-	if(cell_map == NULL)
-	{
-		printf("Cannot alocate array for data");
-		return 0;
-	}
-	
-	for(int i=0; i<2; i++)
-	{
-		cell_map[i] = (char**) calloc(total_rows, sizeof(char*));
+		//creating dynamic multidimensional array
+		cell_map = (char***) calloc(2, sizeof(char*)); //CURRENT ARRAY array
 		if(cell_map == NULL)
 		{
-			printf("Cannot alocate array for data - possibly out of memory or something");
+			printf("Cannot alocate array for data");
 			return 0;
 		}
-		for(int j=0; j<total_rows; j++)
+	
+		for(int i=0; i<2; i++)
 		{
-			cell_map[i][j] = (char*) calloc(total_columns, sizeof(char*));
+			cell_map[i] = (char**) calloc(total_rows, sizeof(char*));
 			if(cell_map == NULL)
 			{
-				printf("Cannot alocate array for data - possibly out of memory or something - 3. step");
+				printf("Cannot alocate array for data - possibly out of memory or something");
 				return 0;
 			}
+			for(int j=0; j<total_rows; j++)
+			{
+				cell_map[i][j] = (char*) calloc(total_columns, sizeof(char*));
+				if(cell_map == NULL)
+				{
+					printf("Cannot alocate array for data - possibly out of memory or something - 3. step");
+					return 0;
+				}
+			}
 		}
-	}
 
-	// reading file and saving data to array
-	f = fopen(FILENAME, "r"); 
-	for(int current_row=0; current_row < total_rows; current_row++) // in every row
-	{	
-		for(int current_column=0; current_column < total_columns; current_column++) // for every column
-			cell_map[CURRENT_ARRAY][current_row][current_column] = fgetc(f)-48;
+		if(!file_found) // 0-not, !0-yes
+		{
+			// reading file and saving data to array
+			f = fopen(FILENAME, "r"); 
+			for(int current_row=0; current_row < total_rows; current_row++) // in every row
+			{	
+				for(int current_column=0; current_column < total_columns; current_column++) // for every column
+					cell_map[CURRENT_ARRAY][current_row][current_column] = fgetc(f)-48;
 
-		fgetc(f); //omit of '\n'
-	}
+				fgetc(f); //omit of '\n'
+			}
+			fclose(f);
+		}
+		else
+		{
+			for(int current_row=0; current_row < total_rows; current_row++) // in every row
+			{	
+				for(int current_column=0; current_column < total_columns; current_column++) // for every column
+					cell_map[CURRENT_ARRAY][current_row][current_column] = rand() % 2;
+			}
+		}
 
 	//_getch();
 	return 1;
@@ -210,11 +229,11 @@ int read_starting_positions_from_file()
 
 int main()
 {	
+	printf("\n\n	Conway's life by baftek\n\n	This is a program that simulates a living group of cells.\n	Dots are dead cells, hashes are alive cells.\n	Alive cells die from isolation when they have 0-1 neighbours\n	They also die of overcrowd when they have 4 or more neighbours.\n	They becomes alive when they have exactly 3 neighbours.\n	Press ANY KEY to start. New window will appear.");
 	if(!read_starting_positions_from_file())
 		if(_getch())
 			return 0;
 	
-	printf("\n\n	Conway's life by baftek\n\n	This is a program that simulates a living group of cells.\n	Dots are dead cells, hashes are alive cells.\n	Alive cells die from isolation when they have 0-1 neighbours\n	They also die of overcrowd when they have 4 or more neighbours.\n	They becomes alive when they have exactly 3 neighbours.\n	Press ANY KEY to start. New window will appear.");
 	_getch();
 
  
