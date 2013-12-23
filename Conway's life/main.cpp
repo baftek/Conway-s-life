@@ -8,7 +8,6 @@
 */
 #include <stdio.h>
 #include <stdlib.h>
-#include <conio.h>
 #include <allegro5\allegro5.h>
 #include <allegro5\allegro_native_dialog.h>
 #include <allegro5\allegro_primitives.h>
@@ -21,13 +20,13 @@ ALLEGRO_FONT *font = NULL;
 #define CALC_POS_Y(x) ( 50+((x)*(TEXT_SIZE+2)) )
 #define XPOS 25 // x axis position of welcome text
 #define TEXT_COLOR 255, 255, 255
+#define TEXT_SIZE 17
 
 #define CURRENT_ARRAY (!(generation_number%2))
 
 int total_rows=0;
 int total_columns=0;
 char ***cell_map; 
-char should_borders_be_considered = 1;
 char file_not_found = 0;
 char filename[] = "input.txt";
 char *pointer_to_filename = filename;
@@ -66,7 +65,7 @@ int check_ndb(int row, int column)
 #define POSITION_OFFSET 50
 int draw_result(int generation_number)
 {
-	system("cls");
+	//system("cls");
 	printf("Conway's life			  GENERATION: %d\n\n	", generation_number);
 
 	al_clear_to_color(al_map_rgb(0,0,20));
@@ -113,7 +112,7 @@ int draw_result(int generation_number)
 	return 1;
 }
 
-int recalculate_environment()
+void recalculate_environment()
 {
 	//int current_row=0, current_column=0;
 	
@@ -148,10 +147,8 @@ int recalculate_environment()
 	for(int current_row=0; current_row < total_rows; current_row++) // in every row
 		for(int current_column=0; current_column < total_columns; current_column++) // for every column
 			cell_map[CURRENT_ARRAY][current_row][current_column] = 0;
-	return 1;
 }
 
-////////////////////
 int read_starting_positions_from_file(int argc)
 {
 	FILE *f;
@@ -265,7 +262,6 @@ int main(int argc, char *argv[])
 
 	al_init_font_addon();
 	al_init_ttf_addon();
-#define TEXT_SIZE 17
 	font = al_load_ttf_font("C:\\Windows\\Fonts\\cour.ttf", TEXT_SIZE, 0);
 	if(!font)
 	{
