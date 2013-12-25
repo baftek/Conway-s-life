@@ -8,6 +8,7 @@
 */
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <allegro5\allegro5.h>
 #include <allegro5\allegro_native_dialog.h>
 #include <allegro5\allegro_primitives.h>
@@ -234,11 +235,16 @@ int read_starting_positions_from_file()
 
 int main(int argc, char *argv[])
 {	
+	char correct_filename = 1;
 	if(argc > 1)
-		pointer_to_filename = argv[1];
+	{
+		if(correct_filename = (char)strstr(argv[1], ".txt\0"))
+			pointer_to_filename = argv[1];
+	}
+		
 	//printf("\n\n	Conway's life by baftek\n\n	This is a program that simulates a living group of cells.\n	Dots are dead cells, hashes are alive cells.\n	Alive cells die from isolation when they have 0-1 neighbours\n	They also die of overcrowd when they have 4 or more neighbours.\n	They becomes alive when they have exactly 3 neighbours.\n	Press ANY KEY to start. New window will appear.");
-	read_starting_positions_from_file(argc);
- 
+	read_starting_positions_from_file();
+
 	if(!al_init()) 
 	{
 		al_show_native_message_box(display, "Error", "Error", "Failed to initialize allegro!", 
@@ -288,10 +294,12 @@ int main(int argc, char *argv[])
 	al_draw_text(font, al_map_rgb(TEXT_COLOR), XPOS, CALC_POS_Y(3), 0, "They also die of overcrowd when they have 4 or more neighbours.");
 	al_draw_text(font, al_map_rgb(TEXT_COLOR), XPOS, CALC_POS_Y(4), 0, "They becomes alive when they have exactly 3 neighbours.");
 	al_draw_text(font, al_map_rgb(TEXT_COLOR), XPOS, CALC_POS_Y(6), 0, "Press ANY KEY to start.");
-	if(file_not_found)
-		al_draw_textf(font, al_map_rgb(TEXT_COLOR), XPOS, CALC_POS_Y(10), 0, "No desired file found, generated random data:");
+	if(!correct_filename)
+		al_draw_textf(font, al_map_rgb(255, 150, 150), XPOS, CALC_POS_Y(10), 0, "Incorrect filename as argument, generated random data:");
+	else if(correct_filename && file_not_found)
+		al_draw_textf(font, al_map_rgb(255, 150, 150), XPOS, CALC_POS_Y(10), 0, "No desired file found, generated random data:");
 	else
-		al_draw_textf(font, al_map_rgb(TEXT_COLOR), XPOS, CALC_POS_Y(10), 0, "File found: ");
+		al_draw_textf(font, al_map_rgb(150, 255, 150), XPOS, CALC_POS_Y(10), 0, "File found: ");
 		al_draw_textf(font, al_map_rgb(TEXT_COLOR), XPOS, CALC_POS_Y(11), 0, "%d rows, %d columns", total_rows, total_columns);
 
 	al_flip_display();
