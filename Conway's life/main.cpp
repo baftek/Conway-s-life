@@ -149,7 +149,7 @@ void recalculate_environment()
 			cell_map[CURRENT_ARRAY][current_row][current_column] = 0;
 }
 
-int read_starting_positions_from_file(int argc)
+int read_starting_positions_from_file()
 {
 	FILE *f;
 	if(file_not_found = !(f = fopen(pointer_to_filename, "r")))
@@ -159,47 +159,46 @@ int read_starting_positions_from_file(int argc)
 		total_columns = 45; //rand() % 15 + 30;
 		total_rows = 30;	// rand() % 25 + 10;
 		printf("\n   Generated numbers\n   columns = %d\n   rows = %d", total_columns, total_rows);
-		//return 0;
 	}
 	else //file exists
 	{
 		total_columns = 0, total_rows = 0;
 	
-		// count columns
+		// count columns given in a file
 		while(fgetc(f) != '\n')
 			total_columns++;
 		fseek(f, 0, SEEK_SET);
 
-		//count rows
+		//count rows given in a file
 		while(!feof(f))
 			if(fgetc(f) == '\n')
 				total_rows++;
-		total_rows+=1; //korekta
+		total_rows+=1; // correction
 		fclose(f);
 	}
 
 		//creating dynamic multidimensional array
-		cell_map = (char***) calloc(2, sizeof(char*)); //CURRENT ARRAY array
+	cell_map = (char***) calloc(2, sizeof(char*)); //CURRENT ARRAY array (two items)
 		if(cell_map == NULL)
 		{
-			printf("Cannot alocate array for data");
+		printf("Cannot alocate array for data - two copies step");
 			return 0;
 		}
 	
-		for(int i=0; i<2; i++)
+	for(int i=0; i<2; i++) // in every of those two copies we create next dimension representing number of rows
 		{
 			cell_map[i] = (char**) calloc(total_rows, sizeof(char*));
 			if(cell_map == NULL)
 			{
-				printf("Cannot alocate array for data - possibly out of memory or something");
+			printf("Cannot alocate array for data - possibly out of memory - rows step");
 				return 0;
 			}
-			for(int j=0; j<total_rows; j++)
+		for(int j=0; j<total_rows; j++) //and in each row in every copy we create next dimension representing number of columns
 			{
 				cell_map[i][j] = (char*) calloc(total_columns, sizeof(char*));
 				if(cell_map == NULL)
 				{
-					printf("Cannot alocate array for data - possibly out of memory or something - 3. step");
+				printf("Cannot alocate array for data - possibly out of memory or something - column operation step");
 					return 0;
 				}
 			}
@@ -212,13 +211,16 @@ int read_starting_positions_from_file(int argc)
 			for(int current_row=0; current_row < total_rows; current_row++) // in every row
 			{	
 				for(int current_column=0; current_column < total_columns; current_column++) // for every column
-					cell_map[CURRENT_ARRAY][current_row][current_column] = fgetc(f)-48;
+				{	
+					char v = fgetc(f)-48;
+					cell_map[CURRENT_ARRAY][current_row][current_column] = (v==0 || v==1) ? v : 0;
+				}
 
-				fgetc(f); //omit of '\n'
+				fgetc(f); //omitting '\n'
 			}
 			fclose(f);
 		}
-		else //random cell values generating
+		else //generating random cell values because no input file found
 		{
 			for(int current_row=0; current_row < total_rows; current_row++) // in every row
 			{	
