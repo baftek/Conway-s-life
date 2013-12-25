@@ -214,7 +214,7 @@ int read_starting_positions_from_file()
 				for(int current_column=0; current_column < total_columns; current_column++) // for every column
 				{	
 					char v = fgetc(f)-48;
-					cell_map[CURRENT_ARRAY][current_row][current_column] = (v==0 || v==1) ? v : 0;
+					cell_map[CURRENT_ARRAY][current_row][current_column] = (v==0 || v==1) ? v : 0; // checking whether values in input file makes sense
 				}
 
 				fgetc(f); //omitting '\n'
@@ -299,7 +299,7 @@ int main(int argc, char *argv[])
 	else if(correct_filename && file_not_found)
 		al_draw_textf(font, al_map_rgb(255, 150, 150), XPOS, CALC_POS_Y(10), 0, "No desired file found, generated random data:");
 	else
-		al_draw_textf(font, al_map_rgb(150, 255, 150), XPOS, CALC_POS_Y(10), 0, "File found: ");
+		al_draw_textf(font, al_map_rgb(150, 255, 150), XPOS, CALC_POS_Y(10), 0, "File %s found: ", pointer_to_filename);
 		al_draw_textf(font, al_map_rgb(TEXT_COLOR), XPOS, CALC_POS_Y(11), 0, "%d rows, %d columns", total_rows, total_columns);
 
 	al_flip_display();
