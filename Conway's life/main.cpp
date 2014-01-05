@@ -153,7 +153,7 @@ void recalculate_environment()
 int read_starting_positions_from_file()
 {
 	FILE *f;
-	if(file_not_found = !(f = fopen(pointer_to_filename, "r")))
+	if(file_not_found = !(f = fopen(pointer_to_filename, "r")) || pointer_to_filename == NULL)
 	{
 		printf("\n\n\n   Could not open the file %s\n\n   Random values will be generated.\n", pointer_to_filename);
 		//srand(time(NULL));	// init of rand
@@ -240,6 +240,11 @@ int main(int argc, char *argv[])
 	{
 		if(correct_filename = (char)strstr(argv[1], ".txt\0"))
 			pointer_to_filename = argv[1];
+		else
+		{
+			char some_imaginary_nonexistent_filename[] = "somethingnonexisting87348734873847";
+			pointer_to_filename = some_imaginary_nonexistent_filename;
+		}
 	}
 		
 	//printf("\n\n	Conway's life by baftek\n\n	This is a program that simulates a living group of cells.\n	Dots are dead cells, hashes are alive cells.\n	Alive cells die from isolation when they have 0-1 neighbours\n	They also die of overcrowd when they have 4 or more neighbours.\n	They becomes alive when they have exactly 3 neighbours.\n	Press ANY KEY to start. New window will appear.");
